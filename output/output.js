@@ -1,0 +1,1 @@
+[{"makeId":["440"],"makeName":["ASTON MARTIN"],"vehicleTypes":[{"typeId":["2"],"typeName":["Passenger Car"]},{"typeId":["7"],"typeName":["Multipurpose Passenger Vehicle (MPV)"]}]},{"makeId":["441"],"makeName":["TESLA"],"vehicleTypes":[{"typeId":["2"],"typeName":["Passenger Car"]},{"typeId":["7"],"typeName":["Multipurpose Passenger Vehicle (MPV)"]}]}]

@@ -1,0 +1,23 @@
+{
+  "name": "xmltojson",
+  "version": "1.0.0",
+  "description": "XML to JSON converter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vatsal2210/xmlTojson.git"
+  },
+  "author": "Vatsal Shah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vatsal2210/xmlTojson/issues"
+  },
+  "homepage": "https://github.com/vatsal2210/xmlTojson#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "xml2js": "^0.4.23"
+  }
+}
