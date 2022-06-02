@@ -1,80 +1,24 @@
-let parseString = require("xml2js").parseString;
-let fs = require("fs");
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const parseString = require("xml2js").parseString;
+const fs = require("fs");
 const axios = require("axios");
+const { fetchDataFromURL, fetchDataFromFile } = require("./utils");
 
-const dataFilePath = "./data/sample1.xml";
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+
 const outputFilePath = "./output/output.js";
 
-let output = [];
-
 /**
- * Fetch Data
- * @param {*} url
- * @returns
+ * Fetch Vehicle types for make
+ * @param {*} vehicles
  */
-const fetchDataFromURL = async (url) => {
-  const res = await axios.get(url);
-  const parseRes = await parseData(res.data);
-  if (!parseRes || res.status !== 200) {
-    console.log("Found error parsing data");
-    return null;
-  } else {
-    return parseRes;
-  }
-};
-
-/**
- * Read data from file
- * @param {*} filePath
- */
-const fetchDataFromFile = async (filePath = dataFilePath) => {
-  const data = await fs.readFileSync(filePath, "utf8");
-  const parseRes = await parseData(data);
-  if (!parseRes) {
-    console.log("Found error parsing data");
-    return;
-  } else {
-    return parseRes;
-  }
-};
-
-/**
- * Parse data
- * @param {*} data
- * @returns
- */
-const parseData = async (data) => {
-  return new Promise((resolve, reject) => {
-    parseString(data, (err, res) => {
-      if (err) {
-        console.log("Parsing error", err);
-        reject(null);
-      } else {
-        resolve(res);
-      }
-    });
-  });
-};
-
-/**
- * Get Data from the URL
- * @returns
- */
-const getData = async () => {
-  try {
-    // const getAllMakes = await fetchDataFromURL(
-    //   `https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML`
-    // );
-    const getAllMakes = await fetchDataFromFile();
-    vehicles = getAllMakes.Response.Results[0].AllVehicleMakes.splice(0, 2); //
-    fetchVehicleTypesForMake(vehicles);
-  } catch (err) {
-    console.log("Read file error:", err);
-  }
-};
-
 const fetchVehicleTypesForMake = async (vehicles) => {
   console.log("Total Vehicles ", vehicles.length);
+  let output = [];
 
   for (let index in vehicles) {
     let vehicle = vehicles[index];
@@ -84,7 +28,8 @@ const fetchVehicleTypesForMake = async (vehicles) => {
       );
 
       let vehicleMakeType =
-        getVehicleTypesForMakeId.Response.Results[0].VehicleTypesForMakeIds;
+        getVehicleTypesForMakeId?.Response?.Results[0]
+          ?.VehicleTypesForMakeIds || [];
 
       output.push({
         makeId: vehicle.Make_ID,
@@ -101,9 +46,26 @@ const fetchVehicleTypesForMake = async (vehicles) => {
       console.log("Get file makes type error", vehicle.Make_ID);
     }
   }
-  console.log(output);
   fs.writeFileSync(outputFilePath, JSON.stringify(output));
-  process.exit();
+  console.log("Output added to the file.");
+  return output;
 };
 
-getData();
+app.get("/data", async (req, res) => {
+  console.log("Start: Get all vehicle data");
+  try {
+    // const getAllMakes = await fetchDataFromURL(
+    //   `https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML`
+    // );
+    const getAllMakes = await fetchDataFromFile();
+    vehicles = getAllMakes.Response.Results[0].AllVehicleMakes.splice(0, 10); // fetch first 10
+    const output = await fetchVehicleTypesForMake(vehicles);
+    res.status(200).send(output);
+  } catch (err) {
+    console.log("Read file error:", err);
+  }
+});
+
+app.listen(4201, async () => {
+  console.log("Listening on 4201");
+});
