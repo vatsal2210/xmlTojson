@@ -23,6 +23,12 @@
      - Common function to parse XML to JSON
        - A common function to pase data from XML to JSON
 
+3. data
+   - sample.xml file (sample document data)
+
+4. output
+   - Saved output `JSON` to the file
+
 ## Added different features set
 
 1. Used Promises
